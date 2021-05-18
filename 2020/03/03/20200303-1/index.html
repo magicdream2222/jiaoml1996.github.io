@@ -1,0 +1,1171 @@
+<!DOCTYPE html>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="zh-CN">
+<head><meta name="generator" content="Hexo 3.8.0">
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2">
+
+<link rel="stylesheet" href="/css/main.css?v=7.0.1">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png?v=7.0.1">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32.png?v=7.0.1">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16.png?v=7.0.1">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=7.0.1" color="#222">
+
+
+
+
+
+
+
+<script id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    version: '7.0.1',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":true,"scrollpercent":true,"onmobile":false},
+    fancybox: false,
+    fastclick: false,
+    lazyload: false,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+  
+
+
+
+
+  <meta name="description" content="用于半监督医学图像分割的变换一致性自集成模型">
+<meta name="keywords" content="医学图像分割,半监督">
+<meta property="og:type" content="article">
+<meta property="og:title" content="论文笔记《Transformation Consistent Self-ensembling Model for Semi-supervised Medical Image Segmentation》">
+<meta property="og:url" content="https://jiaoml1996.github.io/2020/03/03/20200303-1/index.html">
+<meta property="og:site_name" content="Enjoy It">
+<meta property="og:description" content="用于半监督医学图像分割的变换一致性自集成模型">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:image" content="https://jiaoml1996.github.io/2020/03/03/20200303-1/1.png">
+<meta property="og:image" content="https://jiaoml1996.github.io/2020/03/03/20200303-1/2.png">
+<meta property="og:image" content="https://jiaoml1996.github.io/2020/03/03/20200303-1/3.png">
+<meta property="og:image" content="https://jiaoml1996.github.io/2020/03/03/20200303-1/4.png">
+<meta property="og:image" content="https://jiaoml1996.github.io/2020/03/03/20200303-1/5.png">
+<meta property="og:image" content="https://jiaoml1996.github.io/2020/03/03/20200303-1/6.png">
+<meta property="og:image" content="https://jiaoml1996.github.io/2020/03/03/20200303-1/7.png">
+<meta property="og:image" content="https://jiaoml1996.github.io/2020/03/03/20200303-1/8.png">
+<meta property="og:image" content="https://jiaoml1996.github.io/2020/03/03/20200303-1/9.png">
+<meta property="og:image" content="https://jiaoml1996.github.io/2020/03/03/20200303-1/10.png">
+<meta property="og:image" content="https://jiaoml1996.github.io/2020/03/03/20200303-1/11.png">
+<meta property="og:image" content="https://jiaoml1996.github.io/2020/03/03/20200303-1/12.png">
+<meta property="og:image" content="https://jiaoml1996.github.io/2020/03/03/20200303-1/13.png">
+<meta property="og:image" content="https://jiaoml1996.github.io/2020/03/03/20200303-1/14.png">
+<meta property="og:updated_time" content="2021-05-18T14:07:21.851Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="论文笔记《Transformation Consistent Self-ensembling Model for Semi-supervised Medical Image Segmentation》">
+<meta name="twitter:description" content="用于半监督医学图像分割的变换一致性自集成模型">
+<meta name="twitter:image" content="https://jiaoml1996.github.io/2020/03/03/20200303-1/1.png">
+
+
+
+
+
+
+  <link rel="canonical" href="https://jiaoml1996.github.io/2020/03/03/20200303-1/">
+
+
+
+<script id="page.configurations">
+  CONFIG.page = {
+    sidebar: "",
+  };
+</script>
+
+  <title>论文笔记《Transformation Consistent Self-ensembling Model for Semi-supervised Medical Image Segmentation》 | Enjoy It</title>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .motion-element,
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-title { opacity: initial; }
+
+  .use-motion .logo,
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-CN">
+
+  
+  
+    
+  
+
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Enjoy It</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+    
+      
+        <p class="site-subtitle">分享科技的乐趣!</p>
+      
+    
+    
+  </div>
+
+  <div class="site-nav-toggle">
+    <button aria-label="切换导航栏">
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  
+    <ul id="menu" class="menu">
+      
+        
+        
+        
+          
+          <li class="menu-item menu-item-home">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/" rel="section"><i class="menu-item-icon fa fa-fw fa-home"></i> <br>首页</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-about">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/about/" rel="section"><i class="menu-item-icon fa fa-fw fa-user"></i> <br>关于</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-categories">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/categories/" rel="section"><i class="menu-item-icon fa fa-fw fa-th"></i> <br>分类</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-archives">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/archives/" rel="section"><i class="menu-item-icon fa fa-fw fa-archive"></i> <br>归档</a>
+
+  </li>
+
+      
+      
+    </ul>
+  
+
+  
+
+  
+</nav>
+
+
+
+  
+
+
+
+</div>
+    </header>
+
+    
+
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+            
+
+          
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  
+    <div class="reading-progress-bar"></div>
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://jiaoml1996.github.io/2020/03/03/20200303-1/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="MengLei Jiao">
+      <meta itemprop="description" content="一个致力于分享技术的博客">
+      <meta itemprop="image" content="/images/avatar.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Enjoy It">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">论文笔记《Transformation Consistent Self-ensembling Model for Semi-supervised Medical Image Segmentation》
+
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2020-03-03 15:40:15" itemprop="dateCreated datePublished" datetime="2020-03-03T15:40:15+08:00">2020-03-03</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">更新于</span>
+                
+                <time title="修改时间：2021-05-18 22:07:21" itemprop="dateModified" datetime="2021-05-18T22:07:21+08:00">2021-05-18</time>
+              
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/半监督/" itemprop="url" rel="index"><span itemprop="name">半监督</span></a></span>
+
+                
+                
+                  ，
+                
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/半监督/医学图像分割/" itemprop="url" rel="index"><span itemprop="name">医学图像分割</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          
+            <div class="post-symbolscount">
+              
+
+              
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">本文字数：</span>
+                
+                <span title="本文字数">13k</span>
+              
+
+              
+                <span class="post-meta-divider">|</span>
+              
+
+              
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-clock-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">阅读时长 &asymp;</span>
+                
+                <span title="阅读时长">12 分钟</span>
+              
+            </div>
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <div class="note default">
+            <p>用于半监督医学图像分割的变换一致性自集成模型</p>
+          </div>
+<a id="more"></a>
+<h2 id="abstract">Abstract</h2>
+<p>深度卷积神经网络在各种医学图像计算任务中取得了显著的进展。将监督深度学习方法应用于医学图像时，一个常见的问题是缺乏标记数据，而这些标记数据的收集是非常昂贵和耗时的。在本文中，我们提出了一种用于医学图像分割的新型半监督方法，该方法通过仅标记输入的普通监督损失与标记和未标记数据的正则化损失的加权组合来优化网络。为了利用未标记的数据，我们的方法鼓励对不同正则化下相同输入的训练中的网络进行一致的预测。针对半监督分割任务，我们在自集成模型中引入了一种变换一致性策略来增强像素级预测的正则化效果。我们已经在三个典型但具有挑战性的医学图像分割任务上广泛验证了所提出的半监督方法:(i)从国际皮肤成像合作组织（ISIC）2017数据集上的皮肤镜检查图像进行皮肤病变分割，(ii)视网膜眼底青光眼挑战（REFUGE）数据集上眼底图像的视盘分割，(iii)通过肝脏肿瘤分割挑战（LiTS）数据集上的体积CT扫描进行肝脏分割。与现有的方法相比，我们提出的方法在具有挑战性的2D/3D医学图像上具有更好的分割性能，证明了我们的半监督方法在医学图像分割中的有效性。</p>
+<p>索引词-半监督学习，自集成，皮损分割，视盘分割，肝脏分割。</p>
+<h2 id="introduction">INTRODUCTION</h2>
+<p>从医学图像中分割解剖结构或异常区域，如皮肤镜图像、眼底图像和三维计算机断层(CT)扫描，对临床诊断，尤其是疾病诊断和治疗规划具有重要意义。近年来，深度学习技术在语义图像分割任务上取得了令人瞩目的进展，成为计算机视觉和医学影像领域的热门选择[1,2]。深度神经网络的成功通常依赖于大量的标记数据集。然而，获取标记数据是困难和昂贵的，特别是在医学成像领域，只有专家才能提供可靠的注释[3]。例如，在临床中心有成千上万的皮肤镜图像记录，但由经验丰富的皮肤科医生描绘黑色素瘤是非常罕见的;参见图1。这种情况也可以在视盘视网膜眼底图像的分割中观察到，特别是在肝脏CT扫描的分割中，从体积图像中逐层描绘器官是非常耗时和昂贵的。由于标记数据的缺乏，促使人们研究可以在有限监督下训练的方法，如半监督学习[4 - 6]、弱监督学习[7-9]和无监督域适应[10-12]等。在本文中，考虑到获取大量未标记的医学图像数据相对容易，我们重点研究了半监督分割方法。</p>
+<img src="/2020/03/03/20200303-1/1.png">
+<p>半监督学习的目的是学习有限数量的标记数据和任意数量的未标记数据，这是一个基础的、具有挑战性的问题，在现实的临床应用中有很高的影响。半监督问题在医学图像研究领域得到了广泛的研究[13-17]。近年来，医学图像分割的半监督学习具有深度学习的特点[5,18 - 21]。Bai等人[18]提出了一种用于心脏MR图像分割的半监督深度学习模型，该模型将来自未标记数据的分割标签映射增量地添加到训练集中，以细化分割网络。其他的半监督学习方法是基于最近的技术，如变分自编码器(VAE)[5]和生成对抗网络(GAN)[19]。我们从不同的角度来处理半监督分割问题。随着自集成模型在半监督分类问题[22]中的成功应用，我们进一步将该方法应用到医学图像的分割任务中，包括二维和三维的情况。</p>
+<p>针对医学图像分割任务，提出了一种基于自集成策略的半监督学习方法。整个框架采用监督损失和非监督损失的加权组合进行训练。监督损失的设计是为了利用标记数据进行准确的预测。为了利用未标记的数据，我们的自集成方法鼓励在不同的正则化下对相同的输入数据进行一致的网络预测，例如随机高斯噪声、网络dropout和随机数据转换。特别地，我们设计的方法考虑了具有挑战性的分割任务，其中需要预测像素级分类。我们注意到，在分割问题中，如果对输入图像进行变换(如旋转)，则期望预测也应以同样的方式进行变换。实际上，当CNNs的输入被旋转时，相应的网络预测不会以[23]的方式旋转。在这方面，我们通过引入一个转换(即。在我们的网络的输入和输出空间一致的方案。具体地说，我们通过最小化网络预测在相同输入的不同转换下的差异来设计无监督损失。我们广泛地评估了我们的方法，半监督医学图像分割的三个代表性的分割任务，即:，皮肤病变的分割从皮肤镜图像，视盘分割从视网膜图像，肝脏分割从CT扫描。对于3D CT图像的训练，我们分别使用2D和3D卷积神经网络进行实验。为了使用2D卷积神经网络进行训练，我们将体积数据切片为三个相邻的切片，结果是网络输出的串联。实验结果表明，该方法在三维卷积神经网络中具有良好的性能。综上所述，我们的半监督分割方法与监督基线相比，取得了显著的改进，也优于其他半监督分割方法。这项工作的初步版本在[24]中提出。本文的主要贡献有:</p>
+<ul>
+<li>针对各种医学图像分割任务，提出了一种简单有效的半监督分割方法。该方法具有一定的灵活性，可以方便地应用于二维和三维卷积神经网络。</li>
+<li>为了更好地利用未标记的数据进行分割，我们提出了一种转换一致性自集成模型(TCSM)，该模型对半监督分割问题是有效的。</li>
+<li>在三个具有代表性但具有挑战性的医学图像分割任务(包括2D和3D数据集)上的大量实验证明了我们的半监督方法相对于其他方法的有效性。</li>
+<li>我们的方法是目前最先进的，并且在ISIC 2017年的皮肤损伤分割数据集中以半监督的方法建立了一个新的记录。</li>
+</ul>
+<p>本文的剩余部分组织如下。我们在第二节中回顾了相关的技术，并在第三节中详细阐述了半监督方法。第四部分为皮肤镜图像、视网膜基金图像和肝脏CT扫描的实验结果和消融分析。第五部分进一步讨论了我们的方法，第六部分得出了结论。</p>
+<h2 id="related-work">RELATED WORK</h2>
+<p><strong>Semi-supervised segmentation for medical images.</strong> 早期的半监督医学图像分割主要基于手工特征[13-17]。例如，You等人将径向投影和自训练学习相结合，从眼底图像中得到一个改进的视网膜血管整体分割。Portela等人提出了一种基于聚类的半监督高斯混合模型(GMM)来自动分割大脑MR图像。随后，Gu等人提出了一种通过构建面向森林的超像素来进行血管分割的半监督方法。对于皮肤损伤的分割，Jaisakthi等人[17]设计了一种基于K-means聚类和洪泛填充算法的半监督方法。然而，这些半监督的方法是基于手工制作的特性，这些特性的表现能力有限。</p>
+<p>近年来，半监督分割的研究进展呈现出深度学习的特点。Bai等人提出了一种迭代方法用于MR图像的心脏分割，其中交替更新网络参数和未标记数据的分割掩码。基于生成模型的半监督方法在医学图像分析领域也很流行[5,19,25,26]。Sedai等人提出了一种可变自编码器(VAE)从视网膜眼底图像的光学杯分割。他们使用VAE从未标记的图像中学习特征嵌入，然后将特征嵌入与针对标记图像训练的分割自动编码器相结合，对cup区域进行像素级分割。为了将未标记数据包含在训练中，Nie等人[19]提出了一种基于注意的GAN方法来选择未标记数据的可信区域来训练分割网络。另一项基于GAN的工作[26]采用循环一致性原理，对心脏MR图像进行分割。最近，Ganaye等人利用解剖结构的不变性和语义约束，提出了一种半监督的脑结构分割方法。基于多视角协同训练的方法[4,27]已经在三维医学数据上得到了探索。不同的是，我们的方法利用了变换一致性和自集成模型，这是一种简单而有效的医学图像分割方法。</p>
+<img src="/2020/03/03/20200303-1/2.png">
+<p><strong>Transformation equivariant representation.</strong> 有大量关于等方差表示的相关文献，将变换等方差编码到网络中，探究网络的等方差性质[23,28,29]。例如，Cohen和Welling[28]提出了群等变神经网络来改进网络泛化，其中equivariance to 90◦旋转和二面体翻转通过在不同的旋转翻转组合中复制变换后的滤波器进行编码。同时，Dieleman等人设计了四种不同的等方差，通过旋转特征映射而不是过滤器来保持特征映射转换。最近，Worrall等人[23]限制的过滤器，以循环谐波，以实现连续360◦旋转等方差。然而，这些工作的目的是将等方差编码到网络中以提高网络的泛化能力，而我们的方法的目的是更好地利用半监督学习中的未标记数据。</p>
+<p><strong>Medical image segmentation.</strong> 早期医学图像分割方法主要集中在阈值化[30]、统计形状模型[31]和机器学习相关方法[32-36]。近年来，许多学者采用基于深度学习的方法对医学图像进行分割[37 - 39]。这些基于深度学习的方法在皮肤病变分割，视盘分割和肝脏分割方面取得了可喜的成果[40-44]。 Yu等。 [40]探索了网络深度属性，并开发了用于自动皮肤病变分割的深层残差网络，其中将几个残差块堆叠在一起以增加网络代表能力。Yuan等人[45]提出了一个19层的深度卷积神经网络，并以端到端的方式训练了它以进行皮肤病变分割。 对于光盘分割，Fu等人[41]提出了用于联合OC和OD分割的M-Net。并设计了一个磁盘感知网络[41]，通过该网络的不同特征流的集成来进行青光眼筛查。对于肝脏分割，Chlebus等人的[36]提出了一个级联的FCN结合手工制作的功能。Li等人提出了一种2D-3D混合结构，用于从CT图像中分割肝脏和肿瘤。虽然这些方法在实验中取得了良好的效果，但它们是基于完全监督学习的，需要有经验的皮肤科医生或放射科医生进行大量像素级的标注。</p>
+<h2 id="method">METHOD</h2>
+<p>图2是我们提出的用于半监督医学图像分割的变换一致性自集成模型(TCSM)的概述。在标准的全卷积神经网络(FCN)中加入了变换运算。总损失函数是交叉熵损失和均方误差的加权组合，其中对标记数据的交叉熵损失进行了优化，对标记数据和未标记数据均计算了均方误差损失。该框架以半监督的方式进行医学图像分割训练。</p>
+<h3 id="a.-overview">A. Overview</h3>
+<p>为了便于描述我们的方法，我们首先制定了一般的半监督分割任务，其中训练集包含N个输入，包括M个标记的输入和N - M个未标记的输入。我们定义有标记集合为<span class="math inline">\(L=\{ (x_i,y_i) \}^{M}_{i=1}\)</span>, 无标记集合为<span class="math inline">\(U=\{ x_i \}^{N}_{i=M+1}\)</span>, 其中<span class="math inline">\(x_i \in R^{H \times W \times 3}\)</span>是输入图像，<span class="math inline">\(y_i \in \{ 0,1 \}^{H \times W}\)</span>是2D医学图像的ground truth。例如，视网膜眼底图像和皮肤镜图像。一般的半监督分割学习任务可以公式化为优化学习网络的参数<span class="math inline">\(\theta\)</span>： <span class="math display">\[
+\min_{\theta}\sum^{M}_{i=1}l(f(x_i;\theta),y_i)+\lambda R(\theta,L,U), \tag{1}
+\]</span> 其中，l表示监督损失函数，R表示正则化损失（半监督），<span class="math inline">\(f(.)\)</span>表示分割网络。损失函数的第一项用交叉熵损失进行训练，针对仅在标记输入上评价网络输出的正确性。第二项优化了正则化损失，它利用了带标记和未带标记的输入。<span class="math inline">\(\lambda\)</span>是控制正则化项强弱的权重因子。</p>
+<img src="/2020/03/03/20200303-1/3.png">
+<p>半监督学习的最新进展表明，自集成方法有很好的效果[22,47]。成功的关键在于关键平滑假设;也就是说，在图像空间中相邻的数据点在标签空间中可能是相同的。具体来说，这些方法侧重于通过使用自集成和探索不同的扰动来提高目标的质量。扰动包括输入噪声和网络dropout。具有正则化损失的网络鼓励预测保持一致，并有望给出更好的预测。正则化损失可以被描述为: <span class="math display">\[
+R(\theta,L,U)=\sum^{N}_{i=1}E_{\xi^{&#39;},\xi}||f(x_i;\theta,\xi^{&#39;})-f(x_i;\theta,\xi)||^2, \tag{2}
+\]</span> 其中<span class="math inline">\(\xi\)</span>和<span class="math inline">\(\xi^{&#39;}\)</span>表示输入数据的不同的正则化或扰动。在我们的工作中，通过对输入数据设计不同的扰动，我们与这些方法具有相同的思想。具体来说，我们将正则化项设计为一致性损失，以鼓励在不同正则化或扰动(例如，高斯噪声、网络dropout和随机数据转换)下对相同数据进行平滑预测。</p>
+<h3 id="b.-transformation-consistent-self-ensembling-model">B. Transformation Consistent Self-ensembling Model</h3>
+<p>在本小节中，我们将介绍如何针对分割问题有效地设计随机数据转换正则化，即，变换一致自集成模型(TCSM)。在一般的自集成半监督学习中，对于分类问题最容易设计正则化和扰动。然而，在医学图像领域，重要结构或病变的准确分割是一个非常具有挑战性的实际问题，对分割任务的扰动更值得探索。这两个常见任务的一个显著区别是，分类问题是转换不变的，而分割任务是转换等变的。具体来说，对于图像分类，卷积神经网络只识别整个图像中物体的存在或不存在。换句话说，不管对输入图像进行什么样的数据转换(即平移、旋转和翻转)，分类结果都应该保持不变。但是，对于图像分割来说，如果将输入图像旋转，则期望分割掩模与原始掩模具有相同的旋转，尽管相应的像素级预测是相同的;参见图3 (a)中的示例。一般来说，卷积并不是变换(即翻转、旋转)等变的，这意味着如果旋转或翻转CNN输入，那么特征图不一定会以有意义的方式[23]旋转，如图3 (b)所示。因此，由一系列卷积组成的卷积网络也不是变换等变的。形式上，输入<span class="math inline">\(x\)</span>的每一个变换<span class="math inline">\(\pi \in \Pi\)</span>都和输出的变换<span class="math inline">\(\psi \in \Psi\)</span>相关联，也就是说<span class="math inline">\(\psi[f(x)]=f(\pi[x])\)</span>,但是通常<span class="math inline">\(\pi \neq \psi\)</span></p>
+<p>这种现象限制了随机数据变换对分割问题[22]的无监督正则化效果。为了增强正则化，更有效地利用我们的分割任务中的未标记数据，我们引入了一个转换一致的方案在无监督正则化项。具体来说，通过在输入和输出空间将<span class="math inline">\(\psi\)</span>近似为<span class="math inline">\(\pi\)</span>，将这种转换一致性方案嵌入到框架中。该框架的详细说明如图2所示，伪代码如算法1所示。在转换一致性和其他不同扰动（例如：高斯噪声和网络dropout）的作用下，每个输入<span class="math inline">\(x_i\)</span>被输入到网络中进行两次评估，得到两个输出<span class="math inline">\(z_i\)</span>和<span class="math inline">\(\tilde{z_i}\)</span>。更具体地说，转换一致性策略包含三重<span class="math inline">\(\pi_i\)</span>操作；看图2，对于一个训练输入<span class="math inline">\(x_i\)</span>，在第一次评估时，操作<span class="math inline">\(\pi_i\)</span>被应用在输入图像上，在第二次评估时，操作<span class="math inline">\(\pi_i\)</span>被应用在预测图上。随机扰动(如高斯噪声和网络dropout)也应用于网络的二次评估。通过均方误差损失函数最小化<span class="math inline">\(z_i\)</span>和<span class="math inline">\(\tilde{z_i}\)</span>之间的差值，使网络正则化为变换一致，从而提高了网络的泛化能力。值得注意的是，正则化损失在有标记和无标记输入上都进行了评估。为了利用有标记数据<span class="math inline">\(x_i \in L\)</span>,同样的操作<span class="math inline">\(\pi_i\)</span>也作用在<span class="math inline">\(y_i\)</span>上，同时使用标准的交叉熵损失进行优化。最后，通过最小化无监督正则化损失和监督交叉熵损失的加权组合对网络进行训练。请注意，我们在所有实验的训练过程中都使用了相同的数据扩充来进行公平比较。然而，我们的方法不同于传统的数据扩充。具体来说，我们的方法在满足平滑假设的前提下，通过最小化变换后输入的网络输出差异来利用未标记的数据。</p>
+<img src="/2020/03/03/20200303-1/4.png">
+<h3 id="c.-tcsm-for-semi-supervised-medical-image-segmentation">C. TCSM for Semi-supervised Medical Image Segmentation</h3>
+<p><strong>TCSM with 2D medical images</strong> 对于皮肤镜图像和视网膜基底图像，我们使用2D DenseUNet架构[46]作为基线模型。与标准的DenseNet[48]相比，我们增加了用于分割任务的解码器部分。解码器部分为四个块，每个块由“上采样、卷积、批量归一化和ReLU激活”层组成。在编码器部分中每个稠密块的最终卷积层与解码器部分中的卷积层之间添加类unet的跳跃式连接。最后的预测层是通道数为2的卷积层。在最后一个卷积层之前，我们添加一个dropout层，drop rate为0.3。</p>
+<p><strong>TCSM with 3D medical images</strong> 为了将我们的方法推广到三维医学图像，例如肝脏CT扫描，我们分别用2D DenseUNet和3D U-Net[37]训练TCSM。为了训练DenseUNet进行肝脏CT扫描，包括原始图像和容量标签在内的容量数据被切成大量的三个相邻的切片。在这些相邻的切片中，中间的切片被用作基础真值图像。在测试阶段，网络输出是对三个相邻的体积图像切片进行连续测试的结果。对于3D U-Net的训练，我们按照原始设置进行了以下修改。我们将基本过滤器参数修改为16以适应这个输入大小。优化器是学习率为0.01的SGD。使用批处理归一化层来简化训练过程，并将损失函数修改为标准的加权交叉熵损失。</p>
+<p><strong>Details of TCSM</strong> 转换一致性策略包含水平翻转操作、四种旋转操作（旋转角度分别为0,90,180,270）。在每个训练过程中，随机选择一个操作并应用。为了简化实现，我们避免了其他角度，但是所提出的框架可以推广到一般的其他角度。为了保持两项在损耗函数中的平衡，我们在每个小批中均匀随机地选择有标记和无标记的样品。随时间缓慢变化的函数<span class="math inline">\(\lambda(t)\)</span>是监督损失和无监督损失之间的权重因子。权重函数采用高斯过度曲线<span class="math inline">\(k*e^{-5(1-T)^2}\)</span>,其中T表示训练的epoch数，k缩放了权重函数的最大值。在我们的实验中，我们根据经验将k设为1.0。</p>
+<h3 id="d.-technique-details">D. Technique Details</h3>
+<p>1）Implementation: 模型使用Keras工具包[49]实现，使用随机梯度下降法进行训练（momentum为0.9，minibatch size为10）。 初始化学习率为0.01， 学习率根据<span class="math inline">\(lr=lr*(1-iterations/total_iterations)^{0.9}\)</span>进行衰减。我们使用标准的数据扩充技术来避免过度拟合。数据扩充包括随机翻转、旋转以及以0.9到1.1的随机比例因子进行缩放。注意，所有的实验都使用了数据扩充来进行公平比较。</p>
+<p>2）Inference procedure: 在推理阶段，我们删除了网络中的转换操作，并使用原始输入进行一次测试，以进行公平比较。在得到网络的概率图后，我们首先使用0.5的阈值得到二值分割结果，然后使用形态学操作，即填充空洞，得到最终的分割结果。</p>
+<h2 id="experiments">EXPERIMENTS</h2>
+<h3 id="a.-datasets">A. Datasets</h3>
+<p>为了评估我们的方法的有效性，我们对各种医学图像进行了实验，包括皮肤镜图像、视网膜基底图像和肝脏CT扫描。</p>
+<p><strong>Dermoscopy图像数据集</strong> 我们实验中的皮肤镜图像数据集是2017年ISIC皮肤损伤分割挑战数据集[50]。它包括一个包含2000张带注释的皮肤镜图像的训练集，一个包含150张图像的验证集，以及一个包含600张图像的测试集。图像尺寸从540×722到4499×6748。为了保持分割性能和计算成本的平衡，我们首先使用双三次插值将所有图像调整为248×248。</p>
+<p><strong>眼底图像数据集</strong> 眼底图像数据来源于MICCAI 2018视网膜眼底青光眼挑战(REFUGE)。中山大学中山眼科中心的7位独立眼科医师对视盘进行人工像素注释。实验在已发布的包含400张视网膜图像的训练数据集上进行。将训练数据集随机分割为训练集和测试集，利用双三次插值将所有图像调整为248×248。</p>
+<p><strong>肝脏分割数据集</strong> 肝脏分割数据来自2017年肝脏肿瘤分割挑战赛(LiTS)[51]。LiTS数据集包含131个和70个用于训练和测试的对比增强三维腹部CT扫描。该数据集是通过不同的扫描仪和协议从六个不同的临床站点获得的，其平面分辨率在0.55毫米到1.0毫米之间有很大的差异，切片间距在0.45毫米到6.0毫米之间。</p>
+<img src="/2020/03/03/20200303-1/5.png">
+<h3 id="b.-evaluation-metrics">B. Evaluation Metrics</h3>
+<p>对于dermoscopy图像数据集，我们使用5个评价指标来衡量分割性能，包括jaccard index (JA)、dice coefficient (DI)、pixel-wise accuracy (AC)、sensitivity (SE)和specificity (SP)。他们的定义如下： <span class="math display">\[
+AC=\frac{TP+TN}{TP+FP+TN+FN} \\
+SE=\frac{TP}{TP+FN}, SP=\frac{TN}{TN+FP} \\
+JA=\frac{TP}{TP+FN+FP}, DI=\frac{2 \cdot TP }{2 \cdot TP+FN+FP}
+\tag{3}
+\]</span> TP、TN、FP、FN分别为真阳性、真阴性、假阳性、假阴性。对于眼底图像数据集，我们使用JA来测量视盘分割的准确性。对于肝脏CT数据集，根据2017年LiTS challenge[51]的评估，使用Dice per case score来衡量肝脏分割结果的准确性。</p>
+<img src="/2020/03/03/20200303-1/6.png">
+<h3 id="c.-experiments-on-dermoscopy-image-dataset">C. Experiments on Dermoscopy Image Dataset</h3>
+<p>1）50个标记数据的定量和可视化结果:我们报告了我们的方法的性能训练只有50个标记图像和1950个未标记图像。注意，标记的图像是从整个数据集中随机选择的。表I显示了在验证数据集上使用监督方法、使用正则化监督方法和我们的半监督方法进行的实验。我们使用相同的网络架构(DenseUNet)在所有这些实验中进行公平的比较。通过对50幅标记图像的标准交叉熵损失优化监督实验。监督正则化实验也使用50幅标记图像进行训练，但不同的是，总损失函数是交叉熵损失和正则化损失的加权组合，这与我们的TCSM损失函数是一样的。TCSM实验以半监督的方式对50幅有标记和1950幅无标记图像进行训练。从表I可以看出，我们的半监督方法在所有的评价指标上都比监督方法有更高的性能，在JA、DI和SE上分别有2.46%、2.64%和3.60%的显著改进。值得一提的是，监督与正则化实验改进了监督训练，由于正则化损失的标签图像;表一中的“supervised+regu”，所有评价指标上“supervised+regu”的一致性改进说明，正则化损失对标记图像也是有效的。图4展示了监督法(左)和我们的方法(右)的分割结果(红色轮廓)。与监督法(左栏)得到的分割轮廓相比，半监督法更符合ground-truth边界。实验结果表明，与监督学习方法相比，半监督学习方法即TCSM方法是有效的。</p>
+<img src="/2020/03/03/20200303-1/7.png">
+<p>2）转换一致性方案的有效性:为了证明变换一致性正则化方案的有效性，我们对皮肤镜图像数据集进行了消融分析。我们比较了我们的方法与最常见的扰动正则化，即高斯噪声和网络dropout。表二显示了实验结果，其中“Ours-A”表示具有高斯噪声和dropout正则化的半监督学习，“Ours-B”表示具有变换一致正则化的半监督学习，“Ours”表示具有所有这些正则化的实验。注意，所有的实验都是在相同的训练数据上进行的，包括50个标签和1950个未标签数据。如表二所示，这两种正则化分别对半监督学习的性能增益有贡献。与高斯噪声和dropout正则化的性能增量相比，变换一致正则化的性能增量具有很强的竞争力。我们还注意到这两个正则化是互补的。当采用这两种正则化方法时，可以进一步提高性能。</p>
+<img src="/2020/03/03/20200303-1/8.png">
+<img src="/2020/03/03/20200303-1/9.png">
+<p>3）不同标记数下结果:表三显示了我们的半监督方法(使用标记数据和未标记数据训练)和监督方法(仅使用标记数据训练)在不同数量的标记/未标记图像下的病灶分割结果。我们绘制了图5中结果的JA评分。可见，在不同的标记/未标记数据设置下，半监督方法的性能始终优于监督方法，这说明我们的方法有效地利用了未标记数据，有利于提高性能。注意，在所有的半监督学习实验中，我们总共训练了2000幅图像，包括标记图像和未标记图像。与预期一样，当有更多标记的训练图像可用时，监督训练的性能会提高;参见图5中的蓝线。同时，多标记训练图像也可以提高半监督学习的分割性能;参见图5中的橙色线。随着标记样本的增多，监督训练与半监督学习之间的性能差距逐渐缩小，这与我们的预期一致。当标记数据量较小时，我们的方法可以得到较大的改进，因为正则化损失可以有效地利用未标记数据的更多信息。相对而言，随着标记数据数量的增加，改进变得有限。部分原因是标记数据和未标记数据是从同一数据集中随机选取的，大量标记数据可能达到数据集的上限性能。</p>
+<p>从图5中使用2000张标记图像训练的监督方法与半监督方法的比较中可以看出，我们的方法在使用所有标签的情况下提高了JA性能(从79.60%提高到79.95%)。这种改进表明非监督损失也可以对标记数据进行正则化处理。换句话说，正则化条件下的一致性要求可以促使网络学习更健壮的特征，从而提高分割性能。</p>
+<p>4）与其他半监督分割方法的比较:我们将我们的方法与医学影像界最新的半监督分割方法[18]和一种基于对抗学习的半监督方法[56]进行了比较。注意，用于医学图像分割的方法[19]采用了与基于对抗性学习的方法[56]类似的思想。为了公平比较，我们在这个数据集上用相同的网络主干重新实现了它们的方法。我们对50幅有标记图像和1950幅无标记图像进行了设置实验。表V给出了不同方法在验证集上的JA性能。如表V所示，我们提出的方法利用未标记数据对JA进行了2.46%的改进。然而，Bai等人的[18]和Hung等人的[56]方法对JA的改善分别只能提高1.55%和0.46%。通过与其他半监督分割方法的比较，验证了该方法的有效性。</p>
+<p>5）与挑战排行榜的方法比较:我们还将我们的方法与提交给ISIC 2017年皮肤损伤分割挑战的最先进的方法进行了比较。总共有21份参赛作品，最高成绩列于表四。请注意，最终的排名是根据测试集上的JA来决定的。我们训练了两个模型:有300幅标记图像的半监督学习模型和1700幅未标记图像的半监督学习模型，以及只有300幅标记数据的监督学习模型。监督模型表示为我们的基线模型。如表四所示，我们的半监督方法在基准测试中取得了最好的性能，超过了最先进的方法[52]，在JA上有了3.3%的改进(从76.5%到79.8%)。DI和SE的性能提高与JA一致，分别提高了2.5%和5.4%。我们的基线模型有300个标记数据，由于其最先进的网络结构，它也优于其他一些方法。基于这一强基线，我们的半监督学习方法进一步进行了显著的改进，证明了整体半监督学习方法的有效性。</p>
+<img src="/2020/03/03/20200303-1/10.png">
+<img src="/2020/03/03/20200303-1/11.png">
+<h3 id="d.-experiments-on-retinal-fundus-image-dataset">D. Experiments on Retinal Fundus Image Dataset</h3>
+<p>我们报告的性能，我们的方法视盘分割从视网膜眼底图像。将来自REFUGE challenge的400张训练图像随机分离到训练和测试数据集，比例为9:1。对于训练半监督模型，只使用训练集中的一部分标签(即10%和20%)。我们通过减去所有训练数据集的平均RGB值来预处理所有的输入图像。在训练监督模型时，损失函数为传统的交叉熵损失，采用学习速率为0.01，动量为0.9的SGD算法。为了训练半监督模型，我们增加了额外的非监督正则化损失，学习率改为0.001。</p>
+<p>我们报告了在10%标记的训练图像和20%标记的训练图像设置下，监督和半监督结果的JA性能。如表七所示，我们还报告了另外两种有代表性的半监督方法。可以看出，在10%的标记训练设置下，我们的方法取得了1.52%的改进，在所有方法中排名第一。另外，我们的方法在20%的训练设置下的改善也是最高的。图6显示了我们的半监督方法的一些可视化分割结果。我们可以看到，我们的方法可以更好地捕捉到视盘结构的边界。</p>
+<h3 id="e.-experiments-on-lits-dataset">E. Experiments on LiTS dataset</h3>
+<p>对于这个数据集，我们从CT体积来评估肝脏分割的性能。在我们的半监督设置下，我们从挑战中随机抽取了131份原始训练数据，分成118份训练卷和13份测试卷。对于图像预处理，我们将所有扫描的图像强度值截断为[- 200,250]HU范围，以去除不相关的细节。利用二维DenseUNet和三维U-Net进行了实验，验证了该方法的有效性。对于3D U-Net，将输入大小随机裁剪为112×112×32，以利用来自第三维的信息。我们还使用两个不同的U-Net(4 blocks和5 blocks)进行训练，以验证我们的方法在三维CT扫描上的有效性。</p>
+<p>根据2017年LiTS挑战赛的评估，我们使用每个case score的Dice来评估肝脏分割结果，这是指每卷平均的Dice score。我们报告我们的方法的性能和其他两个semi-supervised方法10%标签的训练图像和20%的设置标签的训练图像,分别在表VI。我们可以看到,在DenseUNet基线,我们的方法达到最高的性能提升10%标记训练设置和20%标记训练设置,分别为2.40%和2.17%的改进。对于3D U-Net，我们可以看到block 4的U-Net比block 5的效果更好。在半监督学习中，很明显，我们的方法在10%和20%的设置下都比Bai等人的[18]获得了更高的性能。我们还可视化了一些肝脏切分结果从CT扫描的第二行在图6。</p>
+<h2 id="discussion">DISCUSSION</h2>
+<img src="/2020/03/03/20200303-1/12.png">
+<img src="/2020/03/03/20200303-1/13.png">
+<img src="/2020/03/03/20200303-1/14.png">
+<p>在医学图像领域，监督深度学习已经被证明对很多问题都非常有效。然而，监督学习的良好性能很大程度上依赖于大量注释的可用性。开发具有有限注释的新的学习方法将在很大程度上促进实际的临床应用。在这项工作中，我们重点开发了用于医学图像分割的半监督学习方法。这些方法有很大的潜力，可以利用大量未标记的数据来减少注释工作，并在监督学习之外取得进展。我们的半监督学习方法的关键是转换一致的自集成策略。在三个具有代表性和挑战性的数据集上的大量实验充分证明了该方法的有效性。</p>
+<p>医学图像数据有不同的格式，如二维平面扫描(如皮肤镜图像和眼底图像)和三维立体数据(如MRI、CT)。在本文中，我们使用二维和三维网络对这些不同的数据格式进行分割。我们的方法非常灵活，可以很容易地应用于二维和三维网络。值得一提的是，最近的文献[4,27]是专门针对三维体数据设计的，考虑了体数据的冠状面、矢状面和轴向面三视图协同训练。然而，我们的目标是一个更通用的方法，适用于同时二维和三维医学图像。在三维半监督学习中，考虑体积数据的三维自然性质，设计具体的方法可能是一个有前途的方向。</p>
+<p>最近的网络等方差研究[23,28,29]通过探索等方差性质来提高训练后网络的泛化能力。例如，Cohen和Welling[28]提出了一组等变神经网络，可在90◦旋转和二面翻中实现等变，旨在提高泛化能力，在相同的权重水平下获得更高的结果。我们的方法还利用了变换一致性原理，但是不同的是，我们的目标是半监督分割任务。 此外，如果我们以半监督的方式训练这些工作（即谐波网络[23]）以利用未标记的数据，则变换正则化将不会产生理想的效果，因为将变换应用于输入时网络输出相同 图片。 因此，有限的正则化将限制未标记数据的性能改进。</p>
+<p>我们的方法的一个局限性是，我们假设标记的和未标记的数据都来自相同的分布。然而，在实际的临床应用中，标记和未标记的数据可能不是来自相同的分布，并且标记和未标记的数据之间可能存在域转移。Oliver等人的[57]证明，当未标记的数据集包含非分布的示例时，半监督学习方法的性能会显著下降。然而，目前大多数医学图像分割的半监督方法都没有考虑到这一问题。因此，在未来，我们将探索领域适应[10]技术，并研究如何将其与自集成策略相结合，将我们的方法带向现实的临床应用。</p>
+<h2 id="conclusion">CONCLUSION</h2>
+<p>本文提出了一种新的医学图像分割的半监督学习方法。整个框架采用监督损失和非监督损失的加权组合进行训练。具体地，我们为分割任务引入了一种变换一致的自集成模型，该模型增强了正则化效果以利用未标记的数据，并可方便地应用于二维和三维网络。通过对皮损数据集、视网膜图像数据集和肝脏CT数据集三种医学影像数据集的综合实验分析，验证了该方法的有效性。该方法通用性强，可广泛应用于其它半监督医学图像分析问题。进一步的工作包括研究其他领域的适应技术，以提高我们的半监督学习方法的有效性。</p>
+<hr>
+
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/医学图像分割/" rel="tag"># 医学图像分割</a>
+          
+            <a href="/tags/半监督/" rel="tag"># 半监督</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2020/03/03/20200303/" rel="next" title="论文笔记《Unified Multi-scale Feature Abstraction for Medical Image Segmentation》">
+                <i class="fa fa-chevron-left"></i> 论文笔记《Unified Multi-scale Feature Abstraction for Medical Image Segmentation》
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2020/03/05/20200305/" rel="prev" title="论文笔记《STRUCTURED CONSISTENCY LOSS FOR SEMI-SUPERVISED SEMANTIC SEGMENTATION》">
+                论文笔记《STRUCTURED CONSISTENCY LOSS FOR SEMI-SUPERVISED SEMANTIC SEGMENTATION》 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+  </div>
+
+
+          </div>
+          
+
+  
+    <div class="comments" id="gitalk-container">
+    </div>
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image" src="/images/avatar.jpg" alt="MengLei Jiao">
+            
+              <p class="site-author-name" itemprop="name">MengLei Jiao</p>
+              <p class="site-description motion-element" itemprop="description">一个致力于分享技术的博客</p>
+          </div>
+
+          
+            <nav class="site-state motion-element">
+              
+                <div class="site-state-item site-state-posts">
+                
+                  <a href="/archives/">
+                
+                    <span class="site-state-item-count">25</span>
+                    <span class="site-state-item-name">日志</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-categories">
+                  <a href="/categories/index.html">
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">15</span>
+                    <span class="site-state-item-name">分类</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-tags">
+                  
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">15</span>
+                    <span class="site-state-item-name">标签</span>
+                  
+                </div>
+              
+            </nav>
+          
+
+          
+
+          
+            <div class="links-of-author motion-element">
+              
+                <span class="links-of-author-item">
+                  
+                  
+                    
+                  
+                  
+                    
+                  
+                  <a href="https://github.com/jiaoml1996" title="GitHub &rarr; https://github.com/jiaoml1996" rel="noopener" target="_blank"><i class="fa fa-fw fa-github"></i>GitHub</a>
+                </span>
+              
+                <span class="links-of-author-item">
+                  
+                  
+                    
+                  
+                  
+                    
+                  
+                  <a href="mailto:jiaoml1996@gmail.com" title="E-Mail &rarr; mailto:jiaoml1996@gmail.com" rel="noopener" target="_blank"><i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+                </span>
+              
+            </div>
+          
+
+          
+
+          
+          
+
+          
+            
+          
+          
+
+        </div>
+      </div>
+
+      
+      <!--noindex-->
+        <div class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+            
+            
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#abstract"><span class="nav-number">1.</span> <span class="nav-text">Abstract</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#introduction"><span class="nav-number">2.</span> <span class="nav-text">INTRODUCTION</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#related-work"><span class="nav-number">3.</span> <span class="nav-text">RELATED WORK</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#method"><span class="nav-number">4.</span> <span class="nav-text">METHOD</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#a.-overview"><span class="nav-number">4.1.</span> <span class="nav-text">A. Overview</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#b.-transformation-consistent-self-ensembling-model"><span class="nav-number">4.2.</span> <span class="nav-text">B. Transformation Consistent Self-ensembling Model</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#c.-tcsm-for-semi-supervised-medical-image-segmentation"><span class="nav-number">4.3.</span> <span class="nav-text">C. TCSM for Semi-supervised Medical Image Segmentation</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#d.-technique-details"><span class="nav-number">4.4.</span> <span class="nav-text">D. Technique Details</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#experiments"><span class="nav-number">5.</span> <span class="nav-text">EXPERIMENTS</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#a.-datasets"><span class="nav-number">5.1.</span> <span class="nav-text">A. Datasets</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#b.-evaluation-metrics"><span class="nav-number">5.2.</span> <span class="nav-text">B. Evaluation Metrics</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#c.-experiments-on-dermoscopy-image-dataset"><span class="nav-number">5.3.</span> <span class="nav-text">C. Experiments on Dermoscopy Image Dataset</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#d.-experiments-on-retinal-fundus-image-dataset"><span class="nav-number">5.4.</span> <span class="nav-text">D. Experiments on Retinal Fundus Image Dataset</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#e.-experiments-on-lits-dataset"><span class="nav-number">5.5.</span> <span class="nav-text">E. Experiments on LiTS dataset</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#discussion"><span class="nav-number">6.</span> <span class="nav-text">DISCUSSION</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#conclusion"><span class="nav-number">7.</span> <span class="nav-text">CONCLUSION</span></a></li></ol></div>
+            
+
+          </div>
+        </div>
+      <!--/noindex-->
+      
+
+      
+        <div class="back-to-top">
+          <i class="fa fa-arrow-up"></i>
+          
+            <span id="scrollpercent"><span>0</span>%</span>
+          
+        </div>
+      
+
+    </div>
+  </aside>
+  
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">  <a href="http://www.miitbeian.gov.cn" rel="noopener" target="_blank">豫ICP备16004066号 </a>&copy; <span itemprop="copyrightYear">2021</span>
+  <span class="with-love" id="animate">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">MengLei Jiao</span>
+
+  
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-area-chart"></i>
+    </span>
+    
+    <span title="站点总字数">145k</span>
+  
+
+  
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+    
+    <span title="站点阅读时长">2:12</span>
+  
+</div>
+
+
+  <div class="powered-by">由 <a href="https://hexo.io" class="theme-link" rel="noopener" target="_blank">Hexo</a> 强力驱动 v3.8.0</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 – <a href="https://theme-next.org" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a> v7.0.1</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+
+    
+
+    
+
+    
+  </div>
+
+  
+
+<script>
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+  
+  <script src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script src="/lib/reading_progress/reading_progress.js"></script>
+
+
+  
+
+
+  <script src="/js/src/utils.js?v=7.0.1"></script>
+
+  <script src="/js/src/motion.js?v=7.0.1"></script>
+
+
+
+  
+  
+
+
+  <script src="/js/src/affix.js?v=7.0.1"></script>
+
+  <script src="/js/src/schemes/pisces.js?v=7.0.1"></script>
+
+
+
+  
+  <script src="/js/src/scrollspy.js?v=7.0.1"></script>
+<script src="/js/src/post-details.js?v=7.0.1"></script>
+
+
+
+  
+
+
+  <script src="/js/src/bootstrap.js?v=7.0.1"></script>
+
+
+  
+  
+
+
+  
+    
+
+<script src="//cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.js"></script>
+
+
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.css">
+
+
+
+<script src="//cdn.jsdelivr.net/npm/js-md5@0.7.3/src/md5.min.js"></script>
+
+<script>
+  var gitalk = new Gitalk({
+    clientID: '8959805cc4f880aa75ec',
+    clientSecret: 'b72851850e4fbb076a155488e1a2466bc92910fe',
+    repo: 'jiaoml1996.github.io',
+    owner: 'jiaoml1996',
+    admin: ['jiaoml1996'],
+    id: md5(location.pathname),
+    distractionFreeMode: 'true'
+  });
+  gitalk.render('gitalk-container');
+</script>
+
+  
+
+
+  
+
+
+
+
+  
+
+  
+
+  
+  
+
+  
+  
+
+  
+    
+      <script type="text/x-mathjax-config">
+  
+
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [ ['$', '$'], ['\\(', '\\)'] ],
+      processEscapes: true,
+      skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+    },
+    TeX: {
+      
+      equationNumbers: {
+        autoNumber: 'AMS'
+      }
+    }
+  });
+  MathJax.Hub.Register.StartupHook('TeX Jax Ready', function() {
+    MathJax.InputJax.TeX.prefilterHooks.Add(function(data) {
+      if (data.display) {
+        var next = data.script.nextSibling;
+        while (next && next.nodeName.toLowerCase() === '#text') { next = next.nextSibling }
+        if (next && next.nodeName.toLowerCase() === 'br') { next.parentNode.removeChild(next) }
+      }
+    });
+  });
+</script>
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Queue(function() {
+    var all = MathJax.Hub.getAllJax(), i;
+      for (i = 0; i < all.length; i += 1) {
+        all[i].SourceElement().parentNode.className += ' has-jax';
+      }
+  });
+</script>
+<script src="//cdn.jsdelivr.net/npm/mathjax@2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+<style>
+.MathJax_Display {
+  overflow-x: scroll;
+  overflow-y: hidden;
+}
+</style>
+
+    
+  
+
+
+  
+
+  
+  <script>
+    (function(){
+      var bp = document.createElement('script');
+      var curProtocol = window.location.protocol.split(':')[0];
+      bp.src = (curProtocol === 'https') ? 'https://zz.bdstatic.com/linksubmit/push.js' : 'http://push.zhanzhang.baidu.com/push.js';
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(bp, s);
+    })();
+  </script><!-- hexo-inject:begin --><!-- Begin: Injected MathJax -->
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({"tex2jax":{"inlineMath":[["$","$"],["\\(","\\)"]],"skipTags":["script","noscript","style","textarea","pre","code"],"processEscapes":true},"TeX":{"equationNumbers":{"autoNumber":"AMS"}}});
+</script>
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Queue(function() {
+    var all = MathJax.Hub.getAllJax(), i;
+    for(i=0; i < all.length; i += 1) {
+      all[i].SourceElement().parentNode.className += ' has-jax';
+    }
+  });
+</script>
+
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js">
+</script>
+<!-- End: Injected MathJax -->
+<!-- hexo-inject:end -->
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

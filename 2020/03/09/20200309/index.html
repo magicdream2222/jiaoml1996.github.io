@@ -1,0 +1,1206 @@
+<!DOCTYPE html>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="zh-CN">
+<head><meta name="generator" content="Hexo 3.8.0">
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2">
+
+<link rel="stylesheet" href="/css/main.css?v=7.0.1">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png?v=7.0.1">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32.png?v=7.0.1">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16.png?v=7.0.1">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=7.0.1" color="#222">
+
+
+
+
+
+
+
+<script id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    version: '7.0.1',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":true,"scrollpercent":true,"onmobile":false},
+    fancybox: false,
+    fastclick: false,
+    lazyload: false,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+  
+
+
+
+
+  <meta name="description" content="具有高级和低级一致性的半监督语义分割">
+<meta name="keywords" content="语义分割,半监督">
+<meta property="og:type" content="article">
+<meta property="og:title" content="论文笔记《Semi-Supervised Semantic Segmentation with High- and Low-level Consistency》">
+<meta property="og:url" content="https://jiaoml1996.github.io/2020/03/09/20200309/index.html">
+<meta property="og:site_name" content="Enjoy It">
+<meta property="og:description" content="具有高级和低级一致性的半监督语义分割">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:image" content="https://jiaoml1996.github.io/2020/03/09/20200309/1.png">
+<meta property="og:image" content="https://jiaoml1996.github.io/2020/03/09/20200309/2.png">
+<meta property="og:image" content="https://jiaoml1996.github.io/2020/03/09/20200309/3.png">
+<meta property="og:image" content="https://jiaoml1996.github.io/2020/03/09/20200309/4.png">
+<meta property="og:image" content="https://jiaoml1996.github.io/2020/03/09/20200309/5.png">
+<meta property="og:image" content="https://jiaoml1996.github.io/2020/03/09/20200309/6.png">
+<meta property="og:image" content="https://jiaoml1996.github.io/2020/03/09/20200309/7.png">
+<meta property="og:image" content="https://jiaoml1996.github.io/2020/03/09/20200309/8.png">
+<meta property="og:image" content="https://jiaoml1996.github.io/2020/03/09/20200309/9.png">
+<meta property="og:image" content="https://jiaoml1996.github.io/2020/03/09/20200309/10.png">
+<meta property="og:image" content="https://jiaoml1996.github.io/2020/03/09/20200309/11.png">
+<meta property="og:image" content="https://jiaoml1996.github.io/2020/03/09/20200309/12.png">
+<meta property="og:image" content="https://jiaoml1996.github.io/2020/03/09/20200309/13.png">
+<meta property="og:image" content="https://jiaoml1996.github.io/2020/03/09/20200309/14.png">
+<meta property="og:image" content="https://jiaoml1996.github.io/2020/03/09/20200309/15.png">
+<meta property="og:updated_time" content="2021-05-18T14:07:22.008Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="论文笔记《Semi-Supervised Semantic Segmentation with High- and Low-level Consistency》">
+<meta name="twitter:description" content="具有高级和低级一致性的半监督语义分割">
+<meta name="twitter:image" content="https://jiaoml1996.github.io/2020/03/09/20200309/1.png">
+
+
+
+
+
+
+  <link rel="canonical" href="https://jiaoml1996.github.io/2020/03/09/20200309/">
+
+
+
+<script id="page.configurations">
+  CONFIG.page = {
+    sidebar: "",
+  };
+</script>
+
+  <title>论文笔记《Semi-Supervised Semantic Segmentation with High- and Low-level Consistency》 | Enjoy It</title>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .motion-element,
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-title { opacity: initial; }
+
+  .use-motion .logo,
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-CN">
+
+  
+  
+    
+  
+
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Enjoy It</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+    
+      
+        <p class="site-subtitle">分享科技的乐趣!</p>
+      
+    
+    
+  </div>
+
+  <div class="site-nav-toggle">
+    <button aria-label="切换导航栏">
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  
+    <ul id="menu" class="menu">
+      
+        
+        
+        
+          
+          <li class="menu-item menu-item-home">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/" rel="section"><i class="menu-item-icon fa fa-fw fa-home"></i> <br>首页</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-about">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/about/" rel="section"><i class="menu-item-icon fa fa-fw fa-user"></i> <br>关于</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-categories">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/categories/" rel="section"><i class="menu-item-icon fa fa-fw fa-th"></i> <br>分类</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-archives">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/archives/" rel="section"><i class="menu-item-icon fa fa-fw fa-archive"></i> <br>归档</a>
+
+  </li>
+
+      
+      
+    </ul>
+  
+
+  
+
+  
+</nav>
+
+
+
+  
+
+
+
+</div>
+    </header>
+
+    
+
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+            
+
+          
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  
+    <div class="reading-progress-bar"></div>
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://jiaoml1996.github.io/2020/03/09/20200309/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="MengLei Jiao">
+      <meta itemprop="description" content="一个致力于分享技术的博客">
+      <meta itemprop="image" content="/images/avatar.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Enjoy It">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">论文笔记《Semi-Supervised Semantic Segmentation with High- and Low-level Consistency》
+
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2020-03-09 12:54:34" itemprop="dateCreated datePublished" datetime="2020-03-09T12:54:34+08:00">2020-03-09</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">更新于</span>
+                
+                <time title="修改时间：2021-05-18 22:07:22" itemprop="dateModified" datetime="2021-05-18T22:07:22+08:00">2021-05-18</time>
+              
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/半监督/" itemprop="url" rel="index"><span itemprop="name">半监督</span></a></span>
+
+                
+                
+                  ，
+                
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/半监督/语义分割/" itemprop="url" rel="index"><span itemprop="name">语义分割</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          
+            <div class="post-symbolscount">
+              
+
+              
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">本文字数：</span>
+                
+                <span title="本文字数">11k</span>
+              
+
+              
+                <span class="post-meta-divider">|</span>
+              
+
+              
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-clock-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">阅读时长 &asymp;</span>
+                
+                <span title="阅读时长">10 分钟</span>
+              
+            </div>
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <div class="note default">
+            <p>具有高级和低级一致性的半监督语义分割</p>
+          </div>
+<a id="more"></a>
+<h2 id="abstract">Abstract</h2>
+<p>从有限的标记数据中理解视觉信息的能力是机器学习的一个重要方面。图像级分类在半监督环境下得到了广泛的研究，而在有限数据条件下的密集像素级分类直到最近才引起人们的关注。在这项工作中，我们提出了一种半监督语义分割的方法，它从有限的像素级注释样本中学习，同时利用额外的无注释图像。它使用了两个网络分支，将半监督分类与包括自训练在内的半监督分割联系起来。当使用很少的标签进行训练时，双分支方法减少了低级和高级工件。与现有的方法相比，该方法取得了显著的改进，特别是在训练的标记样本很少的情况下。在几个标准基准上——PASCAL VOC 2012, PASCAL- context，和Cityscapes——该方法在半监督学习中达到了新的最高水平。</p>
+<p>索引术语-计算机视觉，半监督学习，语义分割，生成对抗网络。</p>
+<h2 id="introduction">Introduction</h2>
+<p>语义分割是计算机视觉的关键任务之一，在自动驾驶、医学成像和机器人等领域有着重要的应用。最近，针对不同的数据集[4]、[5]、[31]、[40]，深度卷积神经网络[19]在这项任务中取得了很好的效果。然而，这种成功通常是以收集密集的像素级注释为代价的——这是一个涉及大量手工工作的繁琐过程。</p>
+<p>为了缓解这个问题，有几种方法利用了较弱的监督形式:图像级标签[1]、[32]、[38]、边框框[7]、[29]，或者乱涂乱画的[20]、[36]。之前只有两篇文章[15]和[34]考虑了真正的半监督学习来进行语义分割，这需要一个小的全标记样本子集和一个更大的完全无注释的图像集合。</p>
+<p>在这项工作中，我们提出了一种双分支的半监督语义分割方法，它可以有效地学习给定一个非常小的全注释样本集的无注释样本。我们的设计是基于对有限数据训练的CNNs受两种典型失效模式的观察;见图1 (c - d)。第一个错误出现在低层次的细节上，如错误的物体形状、不准确的边界和不连贯的表面。第二种是对高层信息的误读，导致将大的图像区域分配给错误的类。</p>
+<img src="/2020/03/09/20200309/1.png">
+<p>这两个网络分支被设计成分别处理这两种类型的工件。针对低层次错误，提出了一种改进的基于gan的分割网络模型。它与一个鉴别器一起训练，鉴别器将生成的分割图与地面真值分割图进行分类。我们不使用原始的GAN损耗，而是使用Salimans等人提出的[33]特征匹配损耗。此外，我们还介绍了基于鉴别器评分的自训练过程，该过程通过充分利用高质量的生成器预测来提高最终性能。</p>
+<p>对于第二种类型的工件，我们提出了一种半监督的多标签分类分支，它决定图像中出现的类，从而帮助分割网络做出全局一致的决策。为了利用来自未标记图像的额外图像级信息，我们利用了基于ensemble的半监督分类(SSL)方法[18]、[37]的成功。</p>
+<img src="/2020/03/09/20200309/2.png">
+<p>这两个分支以一种互补的方式工作，并成功地修复了低级和高级错误;典型例子如图1所示。我们展示了我们的方法在不同数量的标记数据上的有效性，这些数据跨越了一系列流行的语义分割数据集:PASCAL VOC 2012 [9]， PASCAL- context[27]和Cityscapes[6]。与现有方法相比，我们始终取得了最好的结果，并定义了半监督语义分割的新技术。当只有很少的训练样本可用时，我们的方法被证明是特别有效的:只有2%的标记数据，我们报告了11%的性能改进(见图2)。</p>
+<p>我们进一步说明，当有额外的图像级弱注释可用时，该方法可以很容易地利用它们。与在相同设置下运行的现有方法相比，它的性能更好。本文的源代码是可用的。https://github.com/sud0301/semisup-semseg</p>
+<h2 id="related-work">Related Work</h2>
+<p><strong>弱监督和半监督分割</strong> 减少注释工作,大多数现有的方法依赖于弱和半监督培训计划,使用弱标签映像级别等整个数据集的类标签[29],[39],边界框[7],[16],[29]或涂鸦[20],[36],半监督计划[16],[29],[39]另外使用一些pixel-wise细分标签。</p>
+<p>只有最近的两部作品[15]，[34]考虑了真正的半监督学习，即，他们改进了完全无注释图像的语义分割。这些方法与我们的方法一样，使用基于gan的模型。然而，这两种方法都以不同的方式使用GAN。Souly等人使用GAN生成附加图像，增强分割网络学习到的特征。他们通过生成额外的类条件图像进一步扩展了他们的半监督方法。</p>
+<p>与我们的研究最相关的是Hung等人的工作。他们还提出了一个基于gan的设计，可以从未标记的样本中学习。然而，我们的框架在许多细节上有本质的不同。Hung等人使用了一种基于fcn的[23]鉴别器，该鉴别器为每个像素生成一个密集的概率图，而我们提出了一种基于图像的鉴别器。针对[23]的两阶段训练过程，提出了一种基于GAN训练动力学的自训练自动集成方法。此外，我们建议使用特征匹配损失，这对GAN训练的稳定性至关重要，特别是在只有少数标记样本可用的情况下。最后，我们增加了一个半监督的多标签分类分支来解决高层次的不一致性。</p>
+<p>尽管Luc等人的工作不包括半监督学习，但他们的工作与我们的工作有一些共同点。在这种情况下，GAN代替了crf后处理，增强了分割图的低水平一致性。Luc等人对原始的GAN损失进行了优化，使预测的分割图与地面真值图相似，并表明在完全监督的情况下，它提高了性能。</p>
+<p><strong>半监督分类</strong> 与分割相比，对于图像分类[2]，[18]，[26]，[33]，[37]，有很多半监督的方法。然而，Oliver等人的[28]批评说，大部分的工作缺乏现实的评估来解决现实的条件。他们提出了一种更接近真实环境的新的实验方法。我们发现，基于一致性的半监督分类方法[2]、[37]在满足Oliver等人提出的至少两个步骤的同时，比监督基线有了改善。首先，这些方法在使用高质量的监督基线的同时，比监督设置有了改进。其次，利用未标记的数据对训练前的网络进行改进。我们在我们的方法中使用了均值-教师方法[37]。</p>
+<p><strong>网络融合</strong> 这种通过通道选择来融合空间和类信息的方法受到了最近其他领域一些研究的启发。Hu等人[14]提出了SE-Net用于图像分类，该方法通过校准信道特征图来学习空间和信道信息的结合。在SE-Net之后，Zhang等人提出在语义分割中加入类信息来突出类相关的特征映射。[13]、[38]、[39]等著作探索了分类方法的使用，以共享和解耦的方式，建设性地使用类信息进行半监督和弱监督语义分割。在这项工作中，我们使用了一种空间和类信息后期融合的解耦方法来去除误报的类信道。</p>
+<h2 id="method">Method</h2>
+<p>我们提出了一种双分支方法来完成半监督语义分割的任务，如图3所示。下分支预测像素级标签，被称为半监督语义分割GAN (s4GAN)。上面的分支执行图像级分类，表示为多标签平均教师(Multi-Label Mean Teacher, MLMT)。</p>
+<img src="/2020/03/09/20200309/3.png">
+<p>s4GAN分支的核心是一个标准的分割网络，用于生成给定输入图像的每个像素的类标签。我们将传统的监督训练和对抗性训练相结合，利用未标记的数据来提高预测质量。分割网络作为一个生成器，并与一个鉴别器一起训练，该鉴别器负责将地面真值分割图与生成的真值分割图区分开来。此外，我们将鉴别器的输出作为一种质量度量，并使用它来识别最佳预测，这些预测将进一步用于自我训练。</p>
+<p>MLMT分支预测用于过滤s4GAN输出的图像级类标签。其核心是一个均值教师分类器，它能有效地去除分割网络的假阳性预测。这两个部门的贡献是相辅相成的。他们的产出被结合起来产生最终的结果。</p>
+<p>符号：我们的数据集<span class="math inline">\(D\)</span>被分成有标注部分<span class="math inline">\(D^{l}=\{ x^{l},y^{l} \}\)</span>和无标注部分<span class="math inline">\(D^{u}=\{ x^{u} \}\)</span>,其中x是输入图像，y是像素级的分割标签。</p>
+<h3 id="s4gan用于语义分割">s4GAN用于语义分割</h3>
+<p>在我们的s4GAN模型中，分割网络S作为一个生成器网络，以图像x为输入，预测C分割图，每个类一个。鉴别器D获取原始图像的拼接输入及其相应的预测分割。它的任务是匹配预测和实际分割地图的分布统计信息。</p>
+<h4 id="training-s">Training S</h4>
+<p>分割网络使用<span class="math inline">\(L_{S}\)</span>被训练，<span class="math inline">\(L_{S}\)</span>包含三个损失函数：标准的交叉熵损失、特征匹配损失、自训练损失。</p>
+<p><strong>交叉熵损失</strong> 这是一个标准的像素级的有监督交叉熵损失项<span class="math inline">\(L_{ce}\)</span>，这个损失对于尺寸为<span class="math inline">\(H \times W \times C\)</span>的<span class="math inline">\(S(x)\)</span>来说，仅仅被用来评估有标签样本<span class="math inline">\(x^{l}\)</span>: <span class="math display">\[
+L_{ce} = -\sum_{h,w,c}y^{l}(h,w,c)\log{S(x^{l})(h,w,c)},\tag{1}
+\]</span> 其中，<span class="math inline">\(y^{l}\)</span>是真实分割的mask。</p>
+<p><strong>特征匹配损失</strong> 特征匹配损失<span class="math inline">\(L_{fm}\)</span>的目标是最小化预测特征统计量之间的平均差异，即<span class="math inline">\(S(x^{u})\)</span>和真实分割图<span class="math inline">\(y^{l}\)</span>: <span class="math display">\[
+L_{fm}=||E_{(x^{l},y^{l})\in D^{l}}[D_{k}(y^{l}\bigoplus x^{l})]-E_{x^{u}\in D^{u}}[D_{k}(S(x^{u})\bigoplus x^{u})]||, \tag{2}
+\]</span> 其中，<span class="math inline">\(D_{k}(.)\)</span>第k层之后的鉴别器网络的中间表示。ground-truth和predicted segmentation mask都与相应的输入图像连接在一起。直观地，它鼓励生成器预测具有与地面真相相同的特征统计的分割地图，因此在质量上也与地面真相相似。这种损失被用在未标记的样品<span class="math inline">\(x^{u}\)</span>上，因此即使在无法获得稠密标记的情况下，也需要合理的解决方案。</p>
+<p><strong>自训练损失</strong> 在训练GAN的时候，鉴别器D和生成器G需要保持平衡。如果D一开始就太强大，它就不能为G提供任何有用的学习信号。为了促进这种平衡动态，我们引入了自我训练(ST)损失。其主要思想是挑选出最佳的生成器输出(即那些能够欺骗D的输出)，这些输出不具有相应的地面真值，并将它们用于监督训练。直觉上，这促使G产生更多的预测，这些预测D无法与真实的预测区分开来。这阻碍了D的进步，不允许它变得太强大。</p>
+<p>从技术上讲，D的输出值在0到1之间，0表示预测的分割图，1表示地面真值分割图。我们使用这个分数作为预测分段质量的信心度量。高质量的预测用于监督训练，即我们根据它们计算标准的交叉熵损失。自训练损失<span class="math inline">\(L_{st}\)</span>可以定义如下：</p>
+<p><span class="math display">\[ F^{HLLC}=\left\{
+\begin{array}{rcl}
+-\sum_{h,w,c}y^{*}\log{S(x^{u})},&amp; if D(S(x^{u})) \ge \gamma \\
+0, &amp; otherwise,
+\end{array} \right. \tag{3}\]</span></p>
+<p>其中，<span class="math inline">\(\gamma\)</span>是置信阈值控制如何确定D需要是关于预测，以便在自我训练中使用。<span class="math inline">\(y^{*}\)</span>是S(x^{u})生成的伪像素级标签。</p>
+<p>最终<span class="math inline">\(L_{S}\)</span>由以下三部分组成: <span class="math display">\[
+L_{S}=L_{ce}+\lambda_{fm}L_{fm}+\lambda_{st}L_{st}, \tag{4}
+\]</span> 其中，<span class="math inline">\(\lambda_{fm},\lambda_{st}&gt;0\)</span>是相应的权重。</p>
+<h4 id="training-d">Training D</h4>
+<p>根据Goodfellow等人提出的原始GAN目标对鉴别器网络进行训练 <span class="math display">\[
+L_{D}=E_{(x^{l},y^{l})\in D^{l}}[\log{D(y^{l}\bigoplus x^{l})}]+E_{x^{u}\in D^{u}}[\log(1-D(S(x^{u})\bigoplus x^{u}))], \tag{5}
+\]</span> 其中，<span class="math inline">\(\bigoplus\)</span>表示通道维度的拼接。根据原始GAN的idea，D学习真实标签<span class="math inline">\(y^{l}\)</span>和假的生成标签<span class="math inline">\(S(x^{u})\)</span>之间的差异。</p>
+<h3 id="多标签半监督分类">多标签半监督分类</h3>
+<p>在此基础上，提出了一种适用于半监督多标签图像分类的半监督分类方法(Mean Teacher)[37]。该模型由两个网络组成:学生网络G和教师网络H。两个网络在不同的小扰动下接收到相同的图像。教师网络的权重<span class="math inline">\((\theta^{&#39;})\)</span>是学生网络权重<span class="math inline">\((\theta)\)</span>的指数移动平均。鼓励学生模型的预测与教师模型的预测相一致，使用一致性损失，即两个预测之间的均方误差。</p>
+<p>我们使用针对有标注样本<span class="math inline">\(x^{l}\)</span>的类交叉熵损失<span class="math inline">\(L_{cce}\)</span>优化学生网络，对所有可用样本<span class="math inline">\((x^{u,l})\)</span>使用一致性损失<span class="math inline">\(L_{cons}\)</span>: <span class="math display">\[ L_{MT}=\left\{
+\begin{array}{rcl}
+-\sum_{c}z^{l}(c)\log{(G_{\theta}(x^{l})(c))} \\
++\lambda_{cons}||G_{\theta}(x^{(u,l)})-H_{\theta^{&#39;}}(x^{&#39;(u,l)})||^2,
+\end{array} \right. \tag{6}\]</span> 其中<span class="math inline">\(x\)</span>和<span class="math inline">\(x^{&#39;}\)</span>分别为学生网络和教师网络的不同增广图像，<span class="math inline">\(z^{l}\)</span>是ground-truth类标签的多热向量。参数<span class="math inline">\(\lambda_{cons}&gt;0\)</span>控制一致性损失<span class="math inline">\(L_{MT}\)</span>的权重。</p>
+<h3 id="网络融合">网络融合</h3>
+<p>这两个描述的分支是分别训练的。为了评估，分类分支的输出只是使那些在输入图像中不存在的类的分割地图失效: <span class="math display">\[ L_{MT}=\left\{
+\begin{array}{rcl}
+0, &amp; if\; G(x_{c}) \leq \tau \\
+S(x)_{c}, &amp; otherwise
+\end{array} \right. \tag{7}\]</span> 其中<span class="math inline">\(S(x)_c\)</span>表示类别c的分割图，<span class="math inline">\(G(x)_c\)</span>是MLMT分支的soft输出，<span class="math inline">\(\tau=0.2\)</span>是通过交叉验证得到的soft输出的阈值。</p>
+<h2 id="experiments">Experiments</h2>
+<p>该方法在PASCAL VOC 2012分词基准、PASCAL- context数据集和Cityscapes数据集上进行了评估。</p>
+<h3 id="setup">Setup</h3>
+<h4 id="数据集">数据集</h4>
+<p><strong>PASCAL VOC 2012</strong> 该数据集由20个前景对象类和一个背景类组成。我们使用了由10582张训练图像和1449张验证图像组成的增强型注释集。训练集包含原始PASCAL数据的1464张图像和分割边界数据集(SBD)[11]的9118张额外图像。训练数据的增加包括随机调整大小、裁剪为321×321和水平翻转。PASCAL VOC数据集的所有结果都显示在验证集上。</p>
+<p><strong>PASCAL-Context</strong> 这是一个完整的场景解析数据集，包含4998个训练图像和5105个带有密集语义标签的测试图像。在[4]、[21]、[40]的基础上，我们对60个最常用的类(包括背景类)使用了语义标签。训练数据的扩充与PASCAL VOC数据集相同。</p>
+<p><strong>Cityscapes</strong> 这是一个包含2975,500,1525张用于训练、验证和测试的密集注释图像的驾驶场景数据集，包含19个类。我们将原始的1024×2048图像的采样率降低了2倍。用大小为256×512的随机作物和水平翻转对训练数据进行扩充。Cityscapes数据集上的所有结果都显示在验证集上。</p>
+<p><strong>Evaluation Metric</strong> 我们在所有的实验中都报告了平均交叉-超并集(mIoU)。</p>
+<img src="/2020/03/09/20200309/4.png">
+<h4 id="网络结构">网络结构</h4>
+<p><strong>半监督分割GAN</strong> 我们使用DeepLabv2[4]作为我们的主要细分网络。由于内存限制，我们使用了它的单尺度变体。GAN模型的鉴别器网络是一个标准的二分类网络，由4个卷积层组成，4×4个核，每个核有{64,128,256,512}个通道，每个通道后面有一个斜率为负0.2的‘Leaky-ReLU’[25]激活，一个概率为0.5的‘dropout’[35]层。我们发现这种高dropout率对稳定的GAN训练至关重要。最后一个卷积层之后是全局平均池和全连接层。使用全局平均池后的输出向量表示来评估特征匹配损失。</p>
+<p><strong>半监督多标签分类网络</strong> 我们使用在ImageNet数据集[8]上预训练的ResNet-101[12]作为基础架构。</p>
+<h4 id="训练细节">训练细节</h4>
+<p>与[4]相似，我们对GAN模型的分割和鉴别器网络都使用了多元学习策略，在每个迭代中，基本学习率乘以一个因子<span class="math inline">\(((1-\frac{iter}{max_iter})^{pow})\)</span>。在我们的设置中，pow = 0.9。根据[15]中的学习方案，使用SGD优化器对分割网络进行优化，基本学习率为2.5e-4，动量为0.9，权值衰减为5e-4。鉴别器网络使用Adam optimizer[17]进行优化，基本学习率为1e-4, betas设置为(0.9,0.99)。该模型在PASCAL VOC和Cityscapes数据集上训练了35K次迭代，在PASCAL- context数据集上训练了50K次迭代。除了Cityscapes数据集外，所有的学习超参数都保持不变，其中识别器网络的基本学习率设置为1e-5。我们对PASCAL数据集使用批处理大小为8，对Cityscapes数据集使用批处理大小为5。Through cross-validation, we find the optimal loss weights: $<em>{fm} = 0.1, </em>{st} = 1.0, _{cons} = 1.0 <span class="math inline">\(和\)</span> = 0.2.<span class="math inline">\(。所有超参数对于所有的数据集都保持不变，而我们设置\)</span><span class="math inline">\(对于PASCAL数据集，设置\)</span>$对于Cityscapes数据集。我们的实现基于开放源码工具箱Pytorch[30]。所有的实验都在Nvidia Tesla P100 GPU上运行。</p>
+<h4 id="基准线">基准线</h4>
+<p>我们将DeepLabv2[4]网络作为全监督基线方法进行了比较，该方法仅在数据集的标记部分进行了训练。DeepLabv2利用扩大的卷积来扩大接受域的大小，合并更大的上下文，并引入了空间金字塔池来在多个层次上捕获图像上下文。</p>
+<p>我们主要的半监督基线是由Hung等人提出的方法。</p>
+<p>除了第2节中描述的不同，他们还使用了两阶段GAN培训。在第一阶段，D和G都只使用标记数据进行训练。在第二阶段，D的输出使用未标记的样本来更新G，而D本身只在标记的图像上进一步训练。</p>
+<h3 id="results">Results</h3>
+<h4 id="半监督语义分割">半监督语义分割</h4>
+<p>我们评估了我们的方法与不同比例的标记和未标记的样品。1/50、1/20、1/8、1/4是数据集中用于标记数据的总训练图像的分数，其余数据不用于标记。数据分割中的标记样本是从整个数据集中随机抽样的，所有基线都使用相同的数据分割。</p>
+<img src="/2020/03/09/20200309/5.png">
+<p><strong>PASCAL VOC 数据集</strong> 表1显示了在Microsoft COCO[22]数据集上使用和不使用预处理的PASCAL VOC数据集的分割结果。与之前的方法相比，我们对所有的数据分割都取得了更好的结果。我们的方法通过使用未标记的样本，在没有对任何分割数据集进行预先训练的情况下，在不同数据分割的基础上实现了5%到12%的性能提升。值得注意的是，即使只有2%(1/50)的标记数据，这种方法也能很好地工作。图4定性地展示了我们的方法如何帮助移除由其他方法产生的工件。我们还通过COCO预训练验证了我们的方法，直接与Hung等人的[15]进行比较，并在1/50的分割中获得了6.1 mIoU的改进。我们推测[15]在低数据状态下是较差的，这是由于两阶段的GAN训练，其中识别器仅根据标记的样本进行更新。这有效地减少了它在训练期间看到的数据量，这很容易导致过度拟合。</p>
+<img src="/2020/03/09/20200309/6.png">
+<p>我们使用Deeplabv3+作为骨干架构进行了初步的实验。Deeplabv3+在低数据“仅监管”设置中是不稳定的。它只有在有大量标记数据的情况下才更优。因此，对于一个信息更丰富的实验，我们更倾向于使用Deeplabv2。但是，我们的半监督模型使用Deeplabv3+比使用基于deeplabv2的模型获得了更好的性能，见表2。</p>
+<img src="/2020/03/09/20200309/7.png">
+<p>为了避免在评估集上进行超参数搜索，我们对结果进行了交叉验证。我们还将结果提交给了PASCAL测试服务器。由于基准的限制，我们只能提交一个随机分割(5%标记的样本)。结果与我们之前的结论一致:基线DeepLabv2为50.1 mIoU，而我们的半监督方法为60.5 mIoU。</p>
+<p><strong>PASCAL-Context数据集</strong> 我们的方法成功地推广到整个场景解析PASCAL-Context数据集。表3显示了PASCAL-Context的两部分(1/8和1/4标记数据)的性能。尽管这个数据集比PASCAL VOC更小，也更困难，但是在1/8和1/4的分段中，仍然比基线3.2%和2.4%有改进。</p>
+<p>图5为使用1/8标记样本和其余未标记样本的PASCAL-Context测试集的定性结果。与PASCAL VOC相比，PASCAL- context是一个更小、更硬的数据集，因此结果在视觉上不那么吸引人。不过，与基准相比，情况仍有明显改善。</p>
+<img src="/2020/03/09/20200309/8.png">
+<p><strong>Cityscapes数据集</strong> 在Cityscapes数据集上，s4GAN分支在1/8和1/4数据拆分的基线3.1%和1.7%的基础上产生了改进;见表4。这个数据集中不同类的分布极不平衡。绝大多数类几乎出现在每个图像中，而剩下的类几乎没有出现。在这种情况下，消除不存在类的标签的分类器没有帮助，因此，我们的MLMT分支对于Cityscapes数据集是无效的。</p>
+<img src="/2020/03/09/20200309/9.png">
+<img src="/2020/03/09/20200309/10.png">
+<h4 id="消融研究">消融研究</h4>
+<p>所有的消融实验都是在没有COCO预训练的PASCAL VOC数据集上进行的。</p>
+<p><strong>两个分支的贡献。</strong></p>
+<p>表5显示了s4GAN分支和MLMT分支的贡献。s4GAN分支能够使用未标记的图像提取额外的密集信息。改进了分割对象的形状，通过填充小洞使分割预测更加连贯，改善了前景和背景之间的精细边界。我们在图7(e)中展示了这些改进。</p>
+<p>MLMT分支起到了补充作用，并从预测中删除了错误的阳性结果。图7(d)显示了使用“只使用MLMT分支”和分割基线方法的改进，图7(g)显示了使用MLMT分支和s4GAN分支的改进。MLMT分支使用未标记的图像来提取关于图像中某些类的存在的图像级信息。对于某些情况，s4GAN分支引入了新的工件，这些工件也被MLMT分支过滤掉了。这种效果在图7的底部行示例中显示。</p>
+<p>在某些情况下，我们的方法产生不精确的预测。有时，具有多个突起的对象类(如植物叶子、椅子腿等)被s4GAN分支分段，如图8(顶部)所示。有时，我们的方法可以将某些模糊的前景对象标识为类之一，如图8(底部)所示。同时，也存在分类器错误预测一些真实的正结果的情况。然而，定性和定量的结果都证实了这些失败案例被所提出的技术的积极影响所抵消。在图9中，我们使用我们的方法包含了一些PASCAL-context数据集的失败案例。图10展示了Cityscapes数据集的一些失败案例，在这些案例中，使用我们的方法没有正确分割很少的瘦对象。</p>
+<img src="/2020/03/09/20200309/11.png">
+<p><strong>不同的s4GAN分支损失项。</strong> 将交叉熵损失(CE)、特征匹配损失(FM)和自训练损失(ST)相结合，对生成网络进行训练。</p>
+<p>为了证明这种配置是合理的，我们比较了使用不同损耗项时的系统性能;见表6所示。当添加所有建议的损失项时，性能会有一致的提高。我们发现使用“FM”损耗而不是标准的GAN损耗来训练对系统的稳定性至关重要。</p>
+<img src="/2020/03/09/20200309/12.png">
+<p>图11说明了使用我们提出的自训练损失的效果。我们绘制了甄别器在训练过程中的评分变化。这些分数分别通过100次模拟(生成)和真实(地面真实)样本的迭代计算平均。如第3.1.1节所讨论的，增加ST损失会阻碍鉴别器的进展，并且不允许它变得过于自信，也就是说，将它的预测分数拉向0.5。从表6的最后一行可以看出，这对生成器性能有积极的影响，特别是在标记的示例很少的情况下。</p>
+<img src="/2020/03/09/20200309/13.png">
+<p><strong>半监督多标签分类</strong> 在这个实验中，我们比较了提出的MLMT分支与标准监督分类器的性能。表5显示，仅使用基于cnn的分类器[12]，我们已经获得了比s4GAN性能提高1.3%的效果，但是当我们进一步添加基于一致性的半监督分类方法时，我们观察到性能提高了2%。两种分类方法的更详细的比较包含在补充文件中。我们还进行了一个简单的启发式实验，我们停用了像素数小于阈值的预测类信道。在表5中，“s4GAN + Threshold”指的是所有类都设置了单个阈值，“s4GAN + class -wise Threshold”指的是每个类都有各自的最佳阈值。我们搜索在1K到12K像素范围内的验证设置的最佳执行阈值，其增量为1K。图7(f)和(g)分别展示了添加一个基于cnn的分类器和一个基于mt的半监督分类器的效果。</p>
+<p>我们还分析了基于cnn的多标签分类和基于mlmt的独立于分割模型的半监督多标签分类的性能。图12为两种方法在多标签分类任务下的ROC曲线比较。对于相同的真阳性率，MLMT分类器获得较低的假阳性率。这种效果在不使用ImageNet预训练时更加明显;参见图12 (b)。这种操作模式对于ImageNet预培训不起作用的领域非常重要，例如生物医学图像分析。</p>
+<img src="/2020/03/09/20200309/14.png">
+<img src="/2020/03/09/20200309/15.png">
+<h4 id="弱标签的半监督语义分割">弱标签的半监督语义分割</h4>
+<p>为了进一步验证我们的方法的有效性，我们将其与其他利用额外弱图像级注释的半监督分割方法[29]、[39]进行了比较。在这里，我们将我们的方法的性能与使用额外的图像级注释的方法进行比较。原始PASCAL VOC数据集的1464幅强(w/ segmentation mask)注释图像和扩充SBD数据集的9118幅弱(image-level)注释图像。为了使用额外的图像级注释，我们使用额外的图像级标签来训练MLMT分支，以改进多标签分类。训练过程和超参数与之前的半监督设置完全相同。表7总结了带有特约9K图像级注释的半监督语义分割结果。我们在基线的基础上提高了5.2%。与以前的方法不同，我们的方法没有利用CRF后处理。</p>
+<h2 id="conclusion">Conclusion</h2>
+<p>在这项工作中，我们提出了一个两分支的方法来完成半监督语义分割的任务。分支的设计是为了减少在低数据环境中工作时经常出现的低级和高级工件。通过一系列的实验验证了该设计的有效性。</p>
+<h2 id="acknowledgements">Acknowledgements</h2>
+<p>本研究由德国联邦教育部和研究部通过Deep-PTL项目和英特尔智能系统网络支持。我们也感谢Facebook对P100服务器的捐赠和捐款。</p>
+<hr>
+
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/语义分割/" rel="tag"># 语义分割</a>
+          
+            <a href="/tags/半监督/" rel="tag"># 半监督</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2020/03/05/20200305/" rel="next" title="论文笔记《STRUCTURED CONSISTENCY LOSS FOR SEMI-SUPERVISED SEMANTIC SEGMENTATION》">
+                <i class="fa fa-chevron-left"></i> 论文笔记《STRUCTURED CONSISTENCY LOSS FOR SEMI-SUPERVISED SEMANTIC SEGMENTATION》
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2020/03/09/20200309-1/" rel="prev" title="论文笔记《SEMI-SUPERVISED SEMANTIC SEGMENTATION NEEDS STRONG, HIGH-DIMENSIONAL PERTURBATIONS》">
+                论文笔记《SEMI-SUPERVISED SEMANTIC SEGMENTATION NEEDS STRONG, HIGH-DIMENSIONAL PERTURBATIONS》 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+  </div>
+
+
+          </div>
+          
+
+  
+    <div class="comments" id="gitalk-container">
+    </div>
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image" src="/images/avatar.jpg" alt="MengLei Jiao">
+            
+              <p class="site-author-name" itemprop="name">MengLei Jiao</p>
+              <p class="site-description motion-element" itemprop="description">一个致力于分享技术的博客</p>
+          </div>
+
+          
+            <nav class="site-state motion-element">
+              
+                <div class="site-state-item site-state-posts">
+                
+                  <a href="/archives/">
+                
+                    <span class="site-state-item-count">25</span>
+                    <span class="site-state-item-name">日志</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-categories">
+                  <a href="/categories/index.html">
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">15</span>
+                    <span class="site-state-item-name">分类</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-tags">
+                  
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">15</span>
+                    <span class="site-state-item-name">标签</span>
+                  
+                </div>
+              
+            </nav>
+          
+
+          
+
+          
+            <div class="links-of-author motion-element">
+              
+                <span class="links-of-author-item">
+                  
+                  
+                    
+                  
+                  
+                    
+                  
+                  <a href="https://github.com/jiaoml1996" title="GitHub &rarr; https://github.com/jiaoml1996" rel="noopener" target="_blank"><i class="fa fa-fw fa-github"></i>GitHub</a>
+                </span>
+              
+                <span class="links-of-author-item">
+                  
+                  
+                    
+                  
+                  
+                    
+                  
+                  <a href="mailto:jiaoml1996@gmail.com" title="E-Mail &rarr; mailto:jiaoml1996@gmail.com" rel="noopener" target="_blank"><i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+                </span>
+              
+            </div>
+          
+
+          
+
+          
+          
+
+          
+            
+          
+          
+
+        </div>
+      </div>
+
+      
+      <!--noindex-->
+        <div class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+            
+            
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#abstract"><span class="nav-number">1.</span> <span class="nav-text">Abstract</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#introduction"><span class="nav-number">2.</span> <span class="nav-text">Introduction</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#related-work"><span class="nav-number">3.</span> <span class="nav-text">Related Work</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#method"><span class="nav-number">4.</span> <span class="nav-text">Method</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#s4gan用于语义分割"><span class="nav-number">4.1.</span> <span class="nav-text">s4GAN用于语义分割</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#training-s"><span class="nav-number">4.1.1.</span> <span class="nav-text">Training S</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#training-d"><span class="nav-number">4.1.2.</span> <span class="nav-text">Training D</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#多标签半监督分类"><span class="nav-number">4.2.</span> <span class="nav-text">多标签半监督分类</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#网络融合"><span class="nav-number">4.3.</span> <span class="nav-text">网络融合</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#experiments"><span class="nav-number">5.</span> <span class="nav-text">Experiments</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#setup"><span class="nav-number">5.1.</span> <span class="nav-text">Setup</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#数据集"><span class="nav-number">5.1.1.</span> <span class="nav-text">数据集</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#网络结构"><span class="nav-number">5.1.2.</span> <span class="nav-text">网络结构</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#训练细节"><span class="nav-number">5.1.3.</span> <span class="nav-text">训练细节</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#基准线"><span class="nav-number">5.1.4.</span> <span class="nav-text">基准线</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#results"><span class="nav-number">5.2.</span> <span class="nav-text">Results</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#半监督语义分割"><span class="nav-number">5.2.1.</span> <span class="nav-text">半监督语义分割</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#消融研究"><span class="nav-number">5.2.2.</span> <span class="nav-text">消融研究</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#弱标签的半监督语义分割"><span class="nav-number">5.2.3.</span> <span class="nav-text">弱标签的半监督语义分割</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#conclusion"><span class="nav-number">6.</span> <span class="nav-text">Conclusion</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#acknowledgements"><span class="nav-number">7.</span> <span class="nav-text">Acknowledgements</span></a></li></ol></div>
+            
+
+          </div>
+        </div>
+      <!--/noindex-->
+      
+
+      
+        <div class="back-to-top">
+          <i class="fa fa-arrow-up"></i>
+          
+            <span id="scrollpercent"><span>0</span>%</span>
+          
+        </div>
+      
+
+    </div>
+  </aside>
+  
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">  <a href="http://www.miitbeian.gov.cn" rel="noopener" target="_blank">豫ICP备16004066号 </a>&copy; <span itemprop="copyrightYear">2021</span>
+  <span class="with-love" id="animate">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">MengLei Jiao</span>
+
+  
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-area-chart"></i>
+    </span>
+    
+    <span title="站点总字数">145k</span>
+  
+
+  
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+    
+    <span title="站点阅读时长">2:12</span>
+  
+</div>
+
+
+  <div class="powered-by">由 <a href="https://hexo.io" class="theme-link" rel="noopener" target="_blank">Hexo</a> 强力驱动 v3.8.0</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 – <a href="https://theme-next.org" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a> v7.0.1</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+
+    
+
+    
+
+    
+  </div>
+
+  
+
+<script>
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+  
+  <script src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script src="/lib/reading_progress/reading_progress.js"></script>
+
+
+  
+
+
+  <script src="/js/src/utils.js?v=7.0.1"></script>
+
+  <script src="/js/src/motion.js?v=7.0.1"></script>
+
+
+
+  
+  
+
+
+  <script src="/js/src/affix.js?v=7.0.1"></script>
+
+  <script src="/js/src/schemes/pisces.js?v=7.0.1"></script>
+
+
+
+  
+  <script src="/js/src/scrollspy.js?v=7.0.1"></script>
+<script src="/js/src/post-details.js?v=7.0.1"></script>
+
+
+
+  
+
+
+  <script src="/js/src/bootstrap.js?v=7.0.1"></script>
+
+
+  
+  
+
+
+  
+    
+
+<script src="//cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.js"></script>
+
+
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.css">
+
+
+
+<script src="//cdn.jsdelivr.net/npm/js-md5@0.7.3/src/md5.min.js"></script>
+
+<script>
+  var gitalk = new Gitalk({
+    clientID: '8959805cc4f880aa75ec',
+    clientSecret: 'b72851850e4fbb076a155488e1a2466bc92910fe',
+    repo: 'jiaoml1996.github.io',
+    owner: 'jiaoml1996',
+    admin: ['jiaoml1996'],
+    id: md5(location.pathname),
+    distractionFreeMode: 'true'
+  });
+  gitalk.render('gitalk-container');
+</script>
+
+  
+
+
+  
+
+
+
+
+  
+
+  
+
+  
+  
+
+  
+  
+
+  
+    
+      <script type="text/x-mathjax-config">
+  
+
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [ ['$', '$'], ['\\(', '\\)'] ],
+      processEscapes: true,
+      skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+    },
+    TeX: {
+      
+      equationNumbers: {
+        autoNumber: 'AMS'
+      }
+    }
+  });
+  MathJax.Hub.Register.StartupHook('TeX Jax Ready', function() {
+    MathJax.InputJax.TeX.prefilterHooks.Add(function(data) {
+      if (data.display) {
+        var next = data.script.nextSibling;
+        while (next && next.nodeName.toLowerCase() === '#text') { next = next.nextSibling }
+        if (next && next.nodeName.toLowerCase() === 'br') { next.parentNode.removeChild(next) }
+      }
+    });
+  });
+</script>
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Queue(function() {
+    var all = MathJax.Hub.getAllJax(), i;
+      for (i = 0; i < all.length; i += 1) {
+        all[i].SourceElement().parentNode.className += ' has-jax';
+      }
+  });
+</script>
+<script src="//cdn.jsdelivr.net/npm/mathjax@2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+<style>
+.MathJax_Display {
+  overflow-x: scroll;
+  overflow-y: hidden;
+}
+</style>
+
+    
+  
+
+
+  
+
+  
+  <script>
+    (function(){
+      var bp = document.createElement('script');
+      var curProtocol = window.location.protocol.split(':')[0];
+      bp.src = (curProtocol === 'https') ? 'https://zz.bdstatic.com/linksubmit/push.js' : 'http://push.zhanzhang.baidu.com/push.js';
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(bp, s);
+    })();
+  </script><!-- hexo-inject:begin --><!-- Begin: Injected MathJax -->
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({"tex2jax":{"inlineMath":[["$","$"],["\\(","\\)"]],"skipTags":["script","noscript","style","textarea","pre","code"],"processEscapes":true},"TeX":{"equationNumbers":{"autoNumber":"AMS"}}});
+</script>
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Queue(function() {
+    var all = MathJax.Hub.getAllJax(), i;
+    for(i=0; i < all.length; i += 1) {
+      all[i].SourceElement().parentNode.className += ' has-jax';
+    }
+  });
+</script>
+
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js">
+</script>
+<!-- End: Injected MathJax -->
+<!-- hexo-inject:end -->
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
